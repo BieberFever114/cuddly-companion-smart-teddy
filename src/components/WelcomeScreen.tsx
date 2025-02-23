@@ -1,7 +1,7 @@
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Bear } from "lucide-react";
+import { Dog } from "lucide-react";
 import { motion } from "framer-motion";
 
 const WelcomeScreen = () => {
@@ -15,7 +15,7 @@ const WelcomeScreen = () => {
           className="flex flex-col items-center space-y-4"
         >
           <div className="w-24 h-24 rounded-full bg-accent/10 flex items-center justify-center animate-float">
-            <Bear className="w-12 h-12 text-accent" />
+            <Dog className="w-12 h-12 text-accent" />
           </div>
           
           <motion.div

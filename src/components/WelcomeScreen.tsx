@@ -3,8 +3,11 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dog } from "lucide-react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const WelcomeScreen = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md p-8 space-y-6">
@@ -38,7 +41,11 @@ const WelcomeScreen = () => {
             transition={{ delay: 0.5 }}
             className="w-full space-y-3"
           >
-            <Button className="w-full" size="lg">
+            <Button 
+              className="w-full" 
+              size="lg"
+              onClick={() => navigate('/teddy')}
+            >
               Get Started
             </Button>
             <Button variant="outline" className="w-full" size="lg">

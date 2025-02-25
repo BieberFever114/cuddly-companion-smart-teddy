@@ -34,7 +34,13 @@ const TeddyCamera = () => {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto p-4">
+    <div className="w-full max-w-md mx-auto">
+      <div className="flex items-center justify-center mb-4 space-x-2">
+        <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+          <Camera className="w-6 h-6 text-white" />
+        </div>
+        <h2 className="text-2xl font-bold text-primary">TeddyAI Vision</h2>
+      </div>
       <Card className="relative overflow-hidden rounded-xl">
         <video
           ref={videoRef}

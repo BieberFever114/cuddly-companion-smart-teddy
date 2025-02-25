@@ -28,7 +28,7 @@ const WelcomeScreen = () => {
             className="text-center space-y-2"
           >
             <h1 className="text-3xl font-bold text-primary">
-              Welcome to CuddlyAI
+              Welcome to TeddyAI
             </h1>
             <p className="text-muted-foreground">
               Your child's safe and smart teddy bear companion
@@ -48,7 +48,12 @@ const WelcomeScreen = () => {
             >
               Get Started
             </Button>
-            <Button variant="outline" className="w-full" size="lg">
+            <Button 
+              variant="outline" 
+              className="w-full" 
+              size="lg"
+              onClick={() => navigate('/learn-more')}
+            >
               Learn More
             </Button>
           </motion.div>

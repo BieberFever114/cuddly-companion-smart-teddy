@@ -92,7 +92,7 @@ const TeddyChat = () => {
 
   return (
     <Card className="w-full max-w-md mx-auto p-4 space-y-4 bg-white/50 backdrop-blur-sm">
-      <div className="h-[60vh] overflow-y-auto space-y-4 p-4">
+      <div className="h-[40vh] overflow-y-auto space-y-4 p-4">
         {messages.map((message, index) => (
           <motion.div
             key={index}

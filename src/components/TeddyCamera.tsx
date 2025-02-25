@@ -3,7 +3,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Camera, Pause, Play } from "lucide-react";
-import * as tf from '@tensorflow/tfx';
+import * as tf from '@tensorflow/tfjs';
 import { motion } from "framer-motion";
 
 const TeddyCamera = () => {

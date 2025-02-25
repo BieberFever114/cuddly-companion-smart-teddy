@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Mic, Send } from "lucide-react";
+import { Send } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 
@@ -29,12 +29,12 @@ const TeddyChat = () => {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
-          "HTTP-Referer": window.location.origin,
-          "X-Title": "TeddyAI"
+          "HTTP-Referer": `${window.location.origin}`,
+          "X-Title": "TeddyAI",
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          model: "openchat/openchat-7b:free",
+          model: "openchat/openchat-3.5-0106",
           messages: [
             {
               role: "system",
@@ -44,7 +44,9 @@ const TeddyChat = () => {
               role: "user",
               content: userInput
             }
-          ]
+          ],
+          temperature: 0.7,
+          max_tokens: 200
         })
       });
 
@@ -55,7 +57,10 @@ const TeddyChat = () => {
       }
 
       const data = await response.json();
-      if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      console.log("API Response:", data); // Debug log
+      
+      if (!data.choices?.[0]?.message?.content) {
+        console.error("Invalid response format:", data);
         throw new Error("Invalid response format");
       }
       
@@ -92,7 +97,7 @@ const TeddyChat = () => {
 
   return (
     <Card className="w-full max-w-md mx-auto p-4 space-y-4 bg-white/50 backdrop-blur-sm">
-      <div className="h-[40vh] overflow-y-auto space-y-4 p-4">
+      <div className="h-[30vh] overflow-y-auto space-y-4 p-4">
         {messages.map((message, index) => (
           <motion.div
             key={index}

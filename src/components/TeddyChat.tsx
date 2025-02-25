@@ -29,7 +29,9 @@ const TeddyChat = () => {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "HTTP-Referer": window.location.origin,
+          "X-Title": "TeddyAI"
         },
         body: JSON.stringify({
           model: "openchat/openchat-7b:free",
@@ -46,7 +48,17 @@ const TeddyChat = () => {
         })
       });
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("OpenRouter API error:", errorData);
+        throw new Error(`API error: ${response.status}`);
+      }
+
       const data = await response.json();
+      if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+        throw new Error("Invalid response format");
+      }
+      
       return data.choices[0].message.content;
     } catch (error) {
       console.error("Error generating response:", error);
@@ -67,6 +79,7 @@ const TeddyChat = () => {
       setMessages(prev => [...prev, { text: response, sender: 'teddy' }]);
       speak(response);
     } catch (error) {
+      console.error("Chat error:", error);
       toast({
         title: "Oops!",
         description: "I couldn't respond right now. Please try again!",

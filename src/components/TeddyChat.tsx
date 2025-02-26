@@ -27,6 +27,7 @@ const TeddyChat = () => {
     try {
       console.log("Sending request to OpenRouter...");
       
+      // Update the API URL to the correct endpoint
       const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -53,29 +54,21 @@ const TeddyChat = () => {
       console.log("Response status:", response.status);
       
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error("OpenRouter API error:", errorText);
+        let errorMessage = "";
         try {
-          const errorData = JSON.parse(errorText);
-          console.error("Parsed error:", errorData);
+          const errorData = await response.json();
+          console.error("OpenRouter API error:", errorData);
+          errorMessage = errorData.error?.message || `API error: ${response.status}`;
         } catch (e) {
-          console.error("Could not parse error as JSON");
+          const errorText = await response.text();
+          console.error("OpenRouter API error (text):", errorText);
+          errorMessage = `API error: ${response.status}`;
         }
-        throw new Error(`API error: ${response.status}`);
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
       console.log("API Response data:", data);
-      
-      if (!data.choices || data.choices.length === 0) {
-        console.error("No choices in response:", data);
-        throw new Error("No choices in response");
-      }
-      
-      if (!data.choices[0].message) {
-        console.error("No message in first choice:", data.choices[0]);
-        throw new Error("No message in first choice");
-      }
       
       return data.choices[0].message.content;
     } catch (error) {
@@ -136,6 +129,21 @@ const TeddyChat = () => {
               </div>
             </motion.div>
           ))
+        )}
+        {isLoading && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex justify-start"
+          >
+            <div className="max-w-[80%] p-3 rounded-lg bg-yellow-100 text-yellow-900">
+              <div className="flex space-x-2">
+                <div className="animate-bounce">•</div>
+                <div className="animate-bounce delay-100">•</div>
+                <div className="animate-bounce delay-200">•</div>
+              </div>
+            </div>
+          </motion.div>
         )}
       </div>
       

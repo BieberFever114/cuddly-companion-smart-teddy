@@ -26,55 +26,46 @@ const TeddyChat = () => {
 
   const generateResponse = async (userInput: string) => {
     try {
-      console.log("Sending request to OpenRouter API...");
-      
-      // Using the exact endpoint from console logs
-      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          // Ensuring proper format for authorization header
-          "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
-          // Using absolute URL for HTTP-Referer
-          "HTTP-Referer": window.location.href,
-          "X-Title": "TeddyAI"
-        },
-        body: JSON.stringify({
-          model: "openchat/openchat-7b:free",
-          messages: [
-            {
-              role: "system",
-              content: "You are TeddyAI, an enthusiastic and educational teddy bear companion for toddlers. Always respond in a cheerful, simple, and engaging way that a young child would understand. Focus on positive reinforcement and gentle guidance."
+        console.log("Sending request to OpenRouter API...");
+
+        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+                "Referer": window.location.origin, // Fixed this line
+                "X-Title": "TeddyAI",
+                "Content-Type": "application/json"
             },
-            {
-              role: "user",
-              content: userInput
-            }
-          ]
-        })
-      });
+            body: JSON.stringify({
+                model: "openchat/openchat-7b:free",
+                messages: [
+                    {
+                        role: "system",
+                        content: "You are TeddyAI, an enthusiastic and educational teddy bear companion for toddlers. Always respond in a cheerful, simple, and engaging way that a young child would understand. Focus on positive reinforcement and gentle guidance."
+                    },
+                    {
+                        role: "user",
+                        content: userInput
+                    }
+                ]
+            })
+        });
 
-      console.log("Response status:", response.status);
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("API Error Response:", errorText);
-        
-        try {
-          const errorData = JSON.parse(errorText);
-          throw new Error(errorData.error?.message || `API error: ${response.status}`);
-        } catch (e) {
-          throw new Error(`API error: ${response.status} - ${errorText.substring(0, 100)}`);
+        console.log("Response status:", response.status);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error("API Error Response:", errorText);
+            throw new Error(errorText);
         }
-      }
 
-      const data = await response.json();
-      console.log("API Response:", data);
-      
-      return data.choices[0].message.content;
+        const data = await response.json();
+        console.log("API Response:", data);
+
+        return data.choices[0].message.content;
     } catch (error) {
-      console.error("Error generating response:", error);
-      throw error;
+        console.error("Error generating response:", error);
+        throw error;
     }
   };
 

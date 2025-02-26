@@ -7,7 +7,7 @@ import { Send } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 
-const OPENROUTER_API_KEY = "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";
+const OPENROUTER_API_KEY = "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";
 
 const TeddyChat = () => {
   const [messages, setMessages] = useState<Array<{text: string, sender: 'user' | 'teddy'}>>([]);
@@ -25,16 +25,18 @@ const TeddyChat = () => {
 
   const generateResponse = async (userInput: string) => {
     try {
-      const response = await fetch("https://api.openrouter.ai/api/v1/chat/completions", {
+      console.log("Sending request to OpenRouter...");
+      
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-          "HTTP-Referer": `${window.location.origin}`,
-          "X-Title": "TeddyAI",
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "HTTP-Referer": window.location.origin,
+          "X-Title": "TeddyAI"
         },
         body: JSON.stringify({
-          model: "openchat/openchat-3.5-0106",
+          model: "openchat/openchat-7b:free",
           messages: [
             {
               role: "system",
@@ -44,24 +46,35 @@ const TeddyChat = () => {
               role: "user",
               content: userInput
             }
-          ],
-          temperature: 0.7,
-          max_tokens: 200
+          ]
         })
       });
 
+      console.log("Response status:", response.status);
+      
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error("OpenRouter API error:", errorData);
+        const errorText = await response.text();
+        console.error("OpenRouter API error:", errorText);
+        try {
+          const errorData = JSON.parse(errorText);
+          console.error("Parsed error:", errorData);
+        } catch (e) {
+          console.error("Could not parse error as JSON");
+        }
         throw new Error(`API error: ${response.status}`);
       }
 
       const data = await response.json();
-      console.log("API Response:", data); // Debug log
+      console.log("API Response data:", data);
       
-      if (!data.choices?.[0]?.message?.content) {
-        console.error("Invalid response format:", data);
-        throw new Error("Invalid response format");
+      if (!data.choices || data.choices.length === 0) {
+        console.error("No choices in response:", data);
+        throw new Error("No choices in response");
+      }
+      
+      if (!data.choices[0].message) {
+        console.error("No message in first choice:", data.choices[0]);
+        throw new Error("No message in first choice");
       }
       
       return data.choices[0].message.content;
@@ -80,7 +93,9 @@ const TeddyChat = () => {
     setIsLoading(true);
 
     try {
+      console.log("Sending message:", userMessage);
       const response = await generateResponse(userMessage);
+      console.log("Received response:", response);
       setMessages(prev => [...prev, { text: response, sender: 'teddy' }]);
       speak(response);
     } catch (error) {
@@ -98,24 +113,30 @@ const TeddyChat = () => {
   return (
     <Card className="w-full max-w-md mx-auto p-4 space-y-4 bg-white/50 backdrop-blur-sm">
       <div className="h-[30vh] overflow-y-auto space-y-4 p-4">
-        {messages.map((message, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-          >
-            <div
-              className={`max-w-[80%] p-3 rounded-lg ${
-                message.sender === 'user'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-yellow-100 text-yellow-900'
-              }`}
+        {messages.length === 0 ? (
+          <div className="text-center text-muted-foreground py-4">
+            Start chatting with TeddyAI!
+          </div>
+        ) : (
+          messages.map((message, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
             >
-              {message.text}
-            </div>
-          </motion.div>
-        ))}
+              <div
+                className={`max-w-[80%] p-3 rounded-lg ${
+                  message.sender === 'user'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-yellow-100 text-yellow-900'
+                }`}
+              >
+                {message.text}
+              </div>
+            </motion.div>
+          ))
+        )}
       </div>
       
       <div className="flex items-center space-x-2">
@@ -123,7 +144,7 @@ const TeddyChat = () => {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Talk to me..."
-          onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+          onKeyDown={(e) => e.key === 'Enter' && handleSend()}
           disabled={isLoading}
           className="bg-white"
         />

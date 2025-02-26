@@ -1,5 +1,5 @@
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dog, Pause, Play } from "lucide-react";
@@ -36,12 +36,12 @@ const TeddyCamera = () => {
   return (
     <div className="w-full max-w-md mx-auto">
       <div className="flex items-center justify-center mb-4 space-x-2">
-        <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+        <div className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center shadow-sm">
           <Dog className="w-6 h-6 text-white" />
         </div>
-        <h2 className="text-2xl font-bold text-primary">TeddyAI Vision</h2>
+        <h2 className="text-2xl font-bold text-gray-800">TeddyAI Vision</h2>
       </div>
-      <Card className="relative overflow-hidden rounded-xl">
+      <Card className="relative overflow-hidden rounded-xl bg-white shadow-md border border-gray-100">
         <video
           ref={videoRef}
           autoPlay
@@ -50,11 +50,11 @@ const TeddyCamera = () => {
         />
         <div className="absolute bottom-4 right-4 space-x-2">
           {!isActive ? (
-            <Button onClick={startCamera} size="lg" className="rounded-full">
+            <Button onClick={startCamera} size="lg" className="rounded-full bg-yellow-400 hover:bg-yellow-500 text-white shadow-md">
               <Play className="w-6 h-6" />
             </Button>
           ) : (
-            <Button onClick={stopCamera} size="lg" variant="destructive" className="rounded-full">
+            <Button onClick={stopCamera} size="lg" variant="destructive" className="rounded-full shadow-md">
               <Pause className="w-6 h-6" />
             </Button>
           )}
@@ -63,9 +63,9 @@ const TeddyCamera = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="absolute top-4 left-4 bg-background/80 backdrop-blur-sm p-2 rounded-lg"
+            className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm p-2 rounded-lg shadow-sm border border-yellow-200"
           >
-            <p className="text-sm font-medium">I see a {detectedObject}!</p>
+            <p className="text-sm font-medium text-gray-800">I see a {detectedObject}!</p>
           </motion.div>
         )}
       </Card>

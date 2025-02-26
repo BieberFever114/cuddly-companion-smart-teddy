@@ -7,6 +7,7 @@ import { Send } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 
+// Using a valid API key format
 const OPENROUTER_API_KEY = "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";
 
 const TeddyChat = () => {
@@ -25,15 +26,17 @@ const TeddyChat = () => {
 
   const generateResponse = async (userInput: string) => {
     try {
-      console.log("Sending request to OpenRouter...");
+      console.log("Sending request to OpenRouter API...");
       
-      // Update the API URL to the correct endpoint
+      // Using the exact endpoint from console logs
       const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
+          // Ensuring proper format for authorization header
           "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
           "Content-Type": "application/json",
-          "HTTP-Referer": window.location.origin,
+          // Using absolute URL for HTTP-Referer
+          "HTTP-Referer": window.location.href,
           "X-Title": "TeddyAI"
         },
         body: JSON.stringify({
@@ -54,21 +57,19 @@ const TeddyChat = () => {
       console.log("Response status:", response.status);
       
       if (!response.ok) {
-        let errorMessage = "";
+        const errorText = await response.text();
+        console.error("API Error Response:", errorText);
+        
         try {
-          const errorData = await response.json();
-          console.error("OpenRouter API error:", errorData);
-          errorMessage = errorData.error?.message || `API error: ${response.status}`;
+          const errorData = JSON.parse(errorText);
+          throw new Error(errorData.error?.message || `API error: ${response.status}`);
         } catch (e) {
-          const errorText = await response.text();
-          console.error("OpenRouter API error (text):", errorText);
-          errorMessage = `API error: ${response.status}`;
+          throw new Error(`API error: ${response.status} - ${errorText.substring(0, 100)}`);
         }
-        throw new Error(errorMessage);
       }
 
       const data = await response.json();
-      console.log("API Response data:", data);
+      console.log("API Response:", data);
       
       return data.choices[0].message.content;
     } catch (error) {
@@ -104,7 +105,7 @@ const TeddyChat = () => {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto p-4 space-y-4 bg-white/50 backdrop-blur-sm">
+    <Card className="w-full max-w-md mx-auto p-4 space-y-4 bg-white shadow-md border border-gray-100">
       <div className="h-[30vh] overflow-y-auto space-y-4 p-4">
         {messages.length === 0 ? (
           <div className="text-center text-muted-foreground py-4">
@@ -121,8 +122,8 @@ const TeddyChat = () => {
               <div
                 className={`max-w-[80%] p-3 rounded-lg ${
                   message.sender === 'user'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-yellow-100 text-yellow-900'
+                    ? 'bg-primary text-white'
+                    : 'bg-gray-100 border border-yellow-200 text-gray-800'
                 }`}
               >
                 {message.text}
@@ -136,11 +137,11 @@ const TeddyChat = () => {
             animate={{ opacity: 1 }}
             className="flex justify-start"
           >
-            <div className="max-w-[80%] p-3 rounded-lg bg-yellow-100 text-yellow-900">
+            <div className="max-w-[80%] p-3 rounded-lg bg-gray-100 border border-yellow-200 text-gray-800">
               <div className="flex space-x-2">
-                <div className="animate-bounce">•</div>
-                <div className="animate-bounce delay-100">•</div>
-                <div className="animate-bounce delay-200">•</div>
+                <div className="animate-bounce text-yellow-500">•</div>
+                <div className="animate-bounce delay-100 text-yellow-500">•</div>
+                <div className="animate-bounce delay-200 text-yellow-500">•</div>
               </div>
             </div>
           </motion.div>
@@ -154,12 +155,13 @@ const TeddyChat = () => {
           placeholder="Talk to me..."
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
           disabled={isLoading}
-          className="bg-white"
+          className="bg-white border border-gray-200"
         />
         <Button 
           onClick={handleSend} 
           size="icon"
           disabled={isLoading}
+          className="bg-yellow-400 hover:bg-yellow-500 text-white"
         >
           <Send className="w-4 h-4" />
         </Button>

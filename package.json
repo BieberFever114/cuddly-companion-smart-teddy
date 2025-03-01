@@ -82,5 +82,18 @@
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
     "vite": "^5.4.1"
-  }
+  },
+  "description": "**URL**: https://lovable.dev/projects/21697c18-0e41-4e00-b0b3-825c7414ec36",
+  "main": "eslint.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BieberFever114/cuddly-companion-smart-teddy.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BieberFever114/cuddly-companion-smart-teddy/issues"
+  },
+  "homepage": "https://github.com/BieberFever114/cuddly-companion-smart-teddy#readme"
 }

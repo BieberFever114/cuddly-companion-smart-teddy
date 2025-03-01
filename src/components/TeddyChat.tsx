@@ -7,8 +7,6 @@ import { Send } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 
-const OPENROUTER_API_KEY = "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";
-
 const TeddyChat = () => {
   const [messages, setMessages] = useState<Array<{text: string, sender: 'user' | 'teddy'}>>([]);
   const [input, setInput] = useState('');
@@ -27,11 +25,14 @@ const TeddyChat = () => {
     try {
       console.log("Sending request to OpenRouter...");
       
-      // Update the API URL to the correct endpoint
+      if (!import.meta.env.NEXT_PUBLIC_OPENROUTER_API_KEY) {
+        throw new Error('OpenRouter API key is not configured');
+      }
+
       const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+          "Authorization": `Bearer ${import.meta.env.NEXT_PUBLIC_OPENROUTER_API_KEY}`,
           "Content-Type": "application/json",
           "HTTP-Referer": window.location.origin,
           "X-Title": "TeddyAI"
